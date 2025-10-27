@@ -108,4 +108,17 @@ const refreshToken = async (req, res) => {
   }
 };
 
-module.exports = { register, login, refreshToken };
+//Logout Controller
+const logout = async (req, res) => {
+  try {
+    //Remove token form DB
+    //
+    //
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+module.exports = { register, login, refreshToken, logout };
