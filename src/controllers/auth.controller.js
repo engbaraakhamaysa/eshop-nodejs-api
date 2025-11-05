@@ -86,6 +86,7 @@ const login = async (req, res) => {
     });
 
     await refreshToken.save();
+    ps;
 
     res.status(200).json({
       user: { _id: user._id, name: user.name, email: user.email },
@@ -105,16 +106,29 @@ const refreshToken = async (req, res) => {
       return res.status(401).json({ message: "No refresh token provided" });
     }
 
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-    const user = await Client.findById(decoded.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    const storedToken = await RefreshToken.findOne({
+      token: refreshToken,
+    }).populate("user");
+
+    if (!storedToken || storedToken.revoked) {
+      return res.status(403).json({ message: "Invalid refesh token" });
     }
 
-    const newAccessToken = createAccessToken(user);
+    // Verify the refresh token using JWT.
+    // If the token is invalid, expired, or has been tampered with,
+    // jwt.verify will throw an error, which will be caught by the catch block below
+    // and a 403 response will be sent to the client.
+
+    jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+
+    const newAccessToken = createAccessToken(storedToken.user);
 
     res.status(200).json({
-      user: { _id: user._id, name: user.name, email: user.email },
+      user: {
+        _id: storedToken.user._id,
+        name: storedToken.user.name,
+        email: storedToken.user.email,
+      },
       token: { accessToken: newAccessToken, refreshToken },
     });
   } catch (err) {
