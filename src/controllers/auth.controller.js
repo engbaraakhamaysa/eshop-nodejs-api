@@ -78,11 +78,18 @@ const login = async (req, res) => {
     }
 
     const accessToken = createAccessToken(user);
-    const refreshToken = createRefreshToken(user);
+    const refreshTokenString = createRefreshToken(user);
+
+    const refreshToken = new RefreshToken({
+      token: refreshTokenString,
+      user: user._id,
+    });
+
+    await refreshToken.save();
 
     res.status(200).json({
       user: { _id: user._id, name: user.name, email: user.email },
-      token: { accessToken, refreshToken },
+      token: { accessToken, refreshTokenString },
     });
   } catch (err) {
     console.error(err);
