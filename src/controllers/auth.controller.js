@@ -23,7 +23,7 @@ const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
     if (!name || !email || !password || password.length < 8) {
-      return res.status(400).json({ error: "Invalid input" });
+      return res.status(401).json({ error: "Invalid input" });
     }
 
     const existingUser = await Client.findOne({ email });
