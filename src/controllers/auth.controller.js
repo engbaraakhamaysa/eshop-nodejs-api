@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const Client = require("../models/Client.model");
+const RefreshToken = require("../models/RefreshToken.model");
 const jwt = require("jsonwebtoken");
 
 // Create JWT Access Token
@@ -38,7 +39,14 @@ const register = async (req, res) => {
     await newClient.save();
 
     const accessToken = createAccessToken(newClient);
-    const refreshToken = createRefreshToken(newClient);
+    const refreshTokenString = createRefreshToken(newClient);
+
+    const refreshToken = new RefreshToken({
+      token: refreshTokenString,
+      user: newClient._id,
+    });
+
+    await refreshToken.save();
 
     res.status(200).json({
       user: {
@@ -46,7 +54,7 @@ const register = async (req, res) => {
         name: newClient.name,
         email: newClient.email,
       },
-      token: { accessToken, refreshToken },
+      token: { accessToken, refreshTokenString },
     });
   } catch (err) {
     console.error(err);
