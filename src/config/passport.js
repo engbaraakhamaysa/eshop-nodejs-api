@@ -17,12 +17,12 @@ passport.use(
       callbackURL: process.env.GOOGLE_CALLBACK_URL,
     },
 
-    async (accessTokenFromGoogle, refreshTokenFromGoogle, profile, doen) => {
+    async (accessTokenFromGoogle, refreshTokenFromGoogle, profile, done) => {
       try {
         const email =
           profile.emails && profile.emails[0] && profile.emails[0].value;
         if (!email) {
-          return doen(new Error("No email found in Google profiel"), null);
+          return done(new Error("No email found in Google profiel"), null);
         }
 
         let user = await Client.findOne({ email });
@@ -44,12 +44,12 @@ passport.use(
         });
         await stored.save();
 
-        return doen(null, {
+        return done(null, {
           user,
           token: { accessToken: accessTokenJWT, refreshToken: refreshTokenJWT },
         });
       } catch (err) {
-        return doen(err, nell);
+        return done(err, null);
       }
     }
   )
