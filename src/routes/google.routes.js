@@ -10,10 +10,8 @@ router.get(
   "/callback",
   passport.authenticate("google", { session: false }),
   (req, res) => {
-    res.status(200).json({
-      user: req.user.user,
-      token: req.user.token,
-    });
+    const { user, token } = req.user;
+    const redirectURL = `http://localhost:3000/google/callback?accessToken=${token.accessToken}&refreshToken=${token.refreshToken}`;
   }
 );
 
