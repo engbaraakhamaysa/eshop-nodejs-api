@@ -12,6 +12,7 @@ router.get(
   (req, res) => {
     const { user, token } = req.user;
     const redirectURL = `http://localhost:3000/google/callback?accessToken=${token.accessToken}&refreshToken=${token.refreshToken}`;
+    res.redirect(redirectURL);
   }
 );
 
