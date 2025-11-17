@@ -10,7 +10,12 @@ router.get(
   "/callback",
   passport.authenticate("google", { session: false }),
   (req, res) => {
-    const { user, token } = req.user;
+    console.log("REQ.USER:", req.user); // <--- تحقق من محتوى req.user
+    if (!req.user || !req.user.token) {
+      return res.status(500).send("No user or token found");
+    }
+
+    const { token } = req.user;
     const redirectURL = `http://localhost:3000/google/callback?accessToken=${token.accessToken}&refreshToken=${token.refreshToken}`;
     res.redirect(redirectURL);
   }
