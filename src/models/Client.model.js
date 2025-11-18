@@ -13,6 +13,13 @@ const clientSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
   },
+
+  role: {
+    type: String,
+    enum: ["user", "admin", "writer"],
+    default: "user",
+  },
+
   password: {
     type: String,
     required: true,
