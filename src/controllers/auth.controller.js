@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs");
-const Client = require("../models/Client.model");
+const User = require("../models/User.model");
 const RefreshToken = require("../models/RefreshToken.model");
 const jwt = require("jsonwebtoken");
 
@@ -27,7 +27,7 @@ const register = async (req, res) => {
       return res.status(401).json({ error: "Invalid input" });
     }
 
-    const existingUser = await Client.findOne({ email });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: "Email already exists" });
     }
@@ -35,24 +35,24 @@ const register = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const newClient = new Client({ name, email, password: hashedPassword });
-    await newClient.save();
+    const newUser = new User({ name, email, password: hashedPassword });
+    await newUser.save();
 
-    const accessToken = createAccessToken(newClient);
-    const refreshTokenString = createRefreshToken(newClient);
+    const accessToken = createAccessToken(newUser);
+    const refreshTokenString = createRefreshToken(newUser);
 
     const refreshToken = new RefreshToken({
       token: refreshTokenString,
-      user: newClient._id,
+      user: newUser._id,
     });
 
     await refreshToken.save();
 
     res.status(200).json({
       user: {
-        _id: newClient._id,
-        name: newClient.name,
-        email: newClient.email,
+        _id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
       },
       token: { accessToken, refreshTokenString },
     });
@@ -67,7 +67,7 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await Client.findOne({ email });
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "Incorrect email or password" });
     }
@@ -116,7 +116,7 @@ const refreshToken = async (req, res) => {
     // Verify the refresh token using JWT.
     // If the token is invalid, expired, or has been tampered with,
     // jwt.verify will throw an error, which will be caught by the catch block below
-    // and a 403 response will be sent to the client.
+    // and a 403 response will be sent to the User.
 
     jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 

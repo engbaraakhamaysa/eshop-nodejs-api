@@ -1,19 +1,20 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const Client = require("../models/Client.model");
+const User = require("../models/User.model");
 const RefreshToken = require("../models/RefreshToken.model");
 
 const {
   createAccessToken,
   createRefreshToken,
-  refreshToken,
 } = require("../controllers/auth.controller");
+
+require("dotenv").config();
 
 passport.use(
   new GoogleStrategy(
     {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientID: process.env.GOOGLE_USER_ID,
+      clientSecret: process.env.GOOGLE_USER_SECRET,
       callbackURL: process.env.GOOGLE_CALLBACK_URL,
     },
 
@@ -21,15 +22,17 @@ passport.use(
       try {
         const email =
           profile.emails && profile.emails[0] && profile.emails[0].value;
+
         if (!email) {
-          return done(new Error("No email found in Google profiel"), null);
+          return done(new Error("No email found in Google profile"), null);
         }
 
-        let user = await Client.findOne({ email });
+        let user = await User.findOne({ email });
+
         if (!user) {
-          user = new Client({
+          user = new User({
             name: profile.displayName || "No Name",
-            email: email,
+            email,
             password: "google_oauth_user",
           });
           await user.save();
@@ -38,15 +41,17 @@ passport.use(
         const accessTokenJWT = createAccessToken(user);
         const refreshTokenJWT = createRefreshToken(user);
 
-        const stored = new RefreshToken({
+        await new RefreshToken({
           token: refreshTokenJWT,
           user: user._id,
-        });
-        await stored.save();
+        }).save();
 
         return done(null, {
           user,
-          token: { accessToken: accessTokenJWT, refreshToken: refreshTokenJWT },
+          token: {
+            accessToken: accessTokenJWT,
+            refreshToken: refreshTokenJWT,
+          },
         });
       } catch (err) {
         return done(err, null);
@@ -54,4 +59,5 @@ passport.use(
     }
   )
 );
+
 module.exports = passport;

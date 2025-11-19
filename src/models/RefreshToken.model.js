@@ -6,12 +6,12 @@ const refreshTokenSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  // Reference relationship: stores the ObjectId of the user from the Client model
+  // Reference relationship: stores the ObjectId of the user from the User model
   // and allows population of full user details using .populate("user")
   user: {
     type: mongoose.Schema.Types.ObjectId,
 
-    ref: "Client",
+    ref: "User",
     required: true,
   },
 

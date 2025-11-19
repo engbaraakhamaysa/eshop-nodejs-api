@@ -1,11 +1,11 @@
 const { use } = require("passport");
-const Client = require("../models/Client.model");
+const User = require("../models/User.model");
 
-//Get All Clients
+//Get All Users
 const getAllClinents = async (req, res) => {
   try {
-    const clients = await Client.find().select("-password");
-    res.status(200).json({ user: clients });
+    const Users = await User.find().select("-password");
+    res.status(200).json({ user: Users });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server Error" });
@@ -15,7 +15,7 @@ const getAllClinents = async (req, res) => {
 const getUserId = async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await Client.findById(userId);
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -33,7 +33,7 @@ const createUser = async (req, res) => {
       return res.status(401).json({ error: "Invalid input" });
     }
 
-    const existingUser = await Client.findOne({ email });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: "Email already exists" });
     }
@@ -41,20 +41,20 @@ const createUser = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const newClient = new Client({
+    const newUser = new User({
       name,
       email,
       role,
       password: hashedPassword,
     });
-    await newClient.save();
+    await newUser.save();
 
     res.status(200).json({
       user: {
-        _id: newClient._id,
-        name: newClient.name,
-        role: newClient.role,
-        email: newClient.email,
+        _id: newUser._id,
+        name: newUser.name,
+        role: newUser.role,
+        email: newUser.email,
       },
     });
   } catch (err) {
@@ -69,7 +69,7 @@ const updateUser = async (req, res) => {
     const { name, email, role } = req.body;
 
     // Check if user exists
-    const user = await Client.findById(id);
+    const user = await User.findById(id);
     if (!user) return res.status(404).json({ error: "User not found" });
 
     // Validate role
@@ -80,7 +80,7 @@ const updateUser = async (req, res) => {
 
     // Check email uniqueness
     if (email) {
-      const emailExists = await Client.findOne({ email, _id: { $ne: id } });
+      const emailExists = await User.findOne({ email, _id: { $ne: id } });
       if (emailExists)
         return res.status(400).json({ error: "Email already exists" });
     }
@@ -92,7 +92,7 @@ const updateUser = async (req, res) => {
     if (role) updates.role = role;
 
     // Update user
-    const updatedUser = await Client.findByIdAndUpdate(id, updates, {
+    const updatedUser = await User.findByIdAndUpdate(id, updates, {
       new: true,
     });
 
