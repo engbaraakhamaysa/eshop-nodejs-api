@@ -3,7 +3,7 @@ const User = require("../models/User.model");
 const { param } = require("../routes/user.routes");
 
 //Get All Users
-const getAllClinents = async (req, res) => {
+const getAllUsers = async (req, res) => {
   try {
     const Users = await User.find().select("-password");
     res.status(200).json({ user: Users });
@@ -131,4 +131,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllClinents, getUserId };
+module.exports = { getAllUsers, getUserId, createUser, updateUser, deleteUser };
