@@ -1,5 +1,6 @@
 const { use } = require("passport");
 const User = require("../models/User.model");
+const { param } = require("../routes/user.routes");
 
 //Get All Users
 const getAllClinents = async (req, res) => {
@@ -106,6 +107,26 @@ const updateUser = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+//Delete User
+const deleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    if (!userId) {
+      return res.status(400).json({ message: "Invalid data" });
+    }
+
+    const userDelete = await User.findByIdAndDelete(userId);
+    if (!userDelete) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ message: "User deleted successfully" });
+  } catch (err) {
+    console.log(err);
     res.status(500).json({ error: "Server error" });
   }
 };
