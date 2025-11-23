@@ -88,7 +88,12 @@ const login = async (req, res) => {
     await refreshToken.save();
 
     res.status(200).json({
-      user: { _id: user._id, name: user.name, email: user.email },
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
       token: { accessToken, refreshTokenString },
     });
   } catch (err) {

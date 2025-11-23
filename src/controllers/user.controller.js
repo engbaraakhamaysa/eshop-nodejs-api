@@ -1,6 +1,7 @@
 const { use } = require("passport");
 const User = require("../models/User.model");
 const { param } = require("../routes/user.routes");
+const bcrypt = require("bcryptjs");
 
 //Get All Users
 const getAllUsers = async (req, res) => {
@@ -29,7 +30,8 @@ const getUserId = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const { name, email, role, password } = req.body;
+    const { name, email, password, role } = req.body;
+    console.log(req.body);
     if (!name || !email || !role || !password || password.length < 8) {
       return res.status(401).json({ error: "Invalid input" });
     }
@@ -45,8 +47,8 @@ const createUser = async (req, res) => {
     const newUser = new User({
       name,
       email,
-      role,
       password: hashedPassword,
+      role,
     });
     await newUser.save();
 
