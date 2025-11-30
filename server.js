@@ -4,6 +4,7 @@ const cors = require("cors");
 const connectDB = require("./src/config/db");
 const authRoutes = require("./src/routes/auth.routes");
 const userRoutes = require("./src/routes/user.routes");
+const categoryRoutes = require("./src/routes/category.routes");
 const googleRoutes = require("./src/routes/google.routes");
 
 const dotenv = require("dotenv");
@@ -16,8 +17,11 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
+app.use("/src/uploads", express.static("uploads"));
+
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/categories", categoryRoutes);
 app.use("/api/auth/google", googleRoutes);
 app.get("/", (req, res) => {
   res.send("Hello");
