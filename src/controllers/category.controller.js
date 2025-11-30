@@ -1,3 +1,7 @@
+//File System Access
+const fs = require("fs");
+const path = require("path");
+
 const Category = require("../models/Category.model");
 
 //Get all categories
@@ -18,7 +22,7 @@ const createCategory = async (req, res) => {
     if (!req.file)
       return res.status(400).json({ message: "Image Is required" });
 
-    const imagePath = `/src/uploads/${req.file.filename}`;
+    const imagePath = `uploads/${req.file.filename}`;
 
     const newCat = new Category({
       title,
@@ -54,9 +58,25 @@ const updateCategory = async (req, res) => {
 
 const deleteCategory = async (req, res) => {
   try {
-    const deleted = await Category.findByIdAndDelete(req.params.id);
-    if (!deleted)
+    const category = await Category.findById(req.params.id);
+    if (!category) {
       return res.status(404).json({ message: "Category not found" });
+    }
+
+    await Category.findByIdAndDelete(req.params.id);
+
+    if (category.image) {
+      const imgPath = path.join(__dirname, "..", category.image);
+
+      fs.unlink(imgPath, (err) => {
+        if (err) {
+          console.log("Error deleting image", err.message);
+        } else {
+          console.log("Image deleted", imgPath);
+        }
+      });
+    }
+
     res.status(200).json({ message: "Category deleted" });
   } catch (err) {
     res.status(500).json({ error: "Server error" });
