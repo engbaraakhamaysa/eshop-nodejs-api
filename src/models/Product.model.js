@@ -17,17 +17,19 @@ const productSchema = new mongoose.Schema(
       require: true,
     },
 
-    images: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Image",
-    },
+    images: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Image",
+      },
+    ],
 
     isDraft: {
       type: Boolean,
       default: true,
     },
   },
-  { timeseries: true }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Product", productSchema);

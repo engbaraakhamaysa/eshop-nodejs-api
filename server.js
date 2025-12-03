@@ -5,6 +5,7 @@ const connectDB = require("./src/config/db");
 const authRoutes = require("./src/routes/auth.routes");
 const userRoutes = require("./src/routes/user.routes");
 const categoryRoutes = require("./src/routes/category.routes");
+const productRoutes = require("./src/routes/product.route");
 const googleRoutes = require("./src/routes/google.routes");
 
 const dotenv = require("dotenv");
@@ -21,6 +22,7 @@ app.use("/src/uploads", express.static("uploads"));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/product", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/auth/google", googleRoutes);
 app.get("/", (req, res) => {
