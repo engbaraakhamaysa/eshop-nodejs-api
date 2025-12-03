@@ -76,4 +76,37 @@ const updateProduct = async (req, res) => {
   }
 };
 
-module.exports = { createDraftProduct, saveProduct, updateProduct };
+const deleteProduct = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const product = await Product.findById(productId);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    //Delete all image
+    const Image = require("../models/Image.model");
+    const fs = require("fs");
+    const path = require("path");
+
+    for (const imageId of product.images) {
+      const image = await Image.findById(imageId);
+      if (image) {
+        const imgPath = path.join(__dirname, "..", image.url);
+        fs.unlink(imgPath, (err) => {
+          if (err) console.log(err.message);
+        });
+        await image.deleteOne;
+      }
+    }
+    await product.deleteOne();
+    res.status(200).json({ message: "Product deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+module.exports = {
+  createDraftProduct,
+  saveProduct,
+  updateProduct,
+  deleteProduct,
+};
