@@ -30,4 +30,28 @@ const createDraftProduct = async (req, res) => {
   }
 };
 
-module.exports = { createDraftProduct };
+//Save product (final)
+const saveProduct = async (req, res) => {
+  try {
+    const { productId } = req.params; //ID product Draft
+    const { title, price, isDraft } = req.body;
+    if (!productId)
+      return res.status(400).json({ message: "Product ID is Required" });
+
+    const product = await Product.findById(productId);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    //Edit Data
+    if (title) product.title = title;
+    if (price) product.price = price;
+    product.isDraft = false;
+
+    await product.save();
+
+    res.status(200).json({ message: "Product saved successfully", product });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+module.exports = { createDraftProduct, saveProduct };
