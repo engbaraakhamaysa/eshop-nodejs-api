@@ -54,4 +54,26 @@ const saveProduct = async (req, res) => {
   }
 };
 
-module.exports = { createDraftProduct, saveProduct };
+//Update product
+const updateProduct = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { title, price, categoryId } = req.body;
+
+    const product = await Product.findById(productId);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    //Edit Data
+    if (title) product.title = title;
+    if (price) product.price = price;
+    if (categoryId) product.category = categoryId;
+
+    await product.save();
+
+    res.status(200).json({ message: "Product updated sucessfully", product });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+module.exports = { createDraftProduct, saveProduct, updateProduct };
