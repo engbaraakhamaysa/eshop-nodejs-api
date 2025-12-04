@@ -17,7 +17,7 @@ const uploadImages = async (req, res) => {
 
     for (const file of req.files) {
       const image = await Image.create({
-        url: `/uploads/${file.filename}`,
+        url: `uploads/${file.filename}`,
         product: productId,
       });
 

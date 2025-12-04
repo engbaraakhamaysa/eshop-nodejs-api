@@ -42,7 +42,7 @@ const updateCategory = async (req, res) => {
     const updates = {};
 
     if (title) updates.title = title;
-    if (req.file) updates.image = `/src/uploads/${req.file.filename}`;
+    if (req.file) updates.image = `uploads/${req.file.filename}`;
 
     const updated = await Category.findByIdAndUpdate(req.params.id, updates, {
       new: true,
