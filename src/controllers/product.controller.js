@@ -123,7 +123,7 @@ const deleteProduct = async (req, res) => {
         fs.unlink(imgPath, (err) => {
           if (err) console.log(err.message);
         });
-        await image.deleteOne;
+        await image.deleteOne();
       }
     }
     await product.deleteOne();
