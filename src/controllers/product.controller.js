@@ -1,5 +1,15 @@
 const Product = require("../models/Product.model");
 
+const getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find()
+      .populate("category")
+      .populate("images");
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 //Create draft product (after selecting category)
 
 const createDraftProduct = async (req, res) => {
@@ -109,4 +119,5 @@ module.exports = {
   saveProduct,
   updateProduct,
   deleteProduct,
+  getAllProducts,
 };

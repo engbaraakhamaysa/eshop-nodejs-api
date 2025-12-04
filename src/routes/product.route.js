@@ -6,7 +6,10 @@ const {
   saveProduct,
   updateProduct,
   deleteProduct,
+  getAllProducts,
 } = require("../controllers/product.controller");
+
+router.get("/", getAllProducts);
 
 router.post("/draft", createDraftProduct);
 
